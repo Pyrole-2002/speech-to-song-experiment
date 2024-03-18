@@ -3,18 +3,26 @@
 import React from "react";
 import { useState, useEffect } from "react";
 
+
+
+// first page
+
+//IMP: make sure questions are uniquely and appropriately named.
+
 const QuestionnairePage = () => {
-    const [questionnaireData, setQuestionnaireData] = useState({});
-    const handleSubmit = (e: any) => {
+    const setQuestionnaireData =  (data: any) => {
+        let others =  localStorage.getItem("pages"); 
+        localStorage.setItem("pages", JSON.stringify( {...(others?JSON.parse(others):{}),...data} ));
+    };
+    const handleSubmit =  (e: any) => {
         e.preventDefault();
         const formData = new FormData(e.target);
         const data = Object.fromEntries(formData);
-        setQuestionnaireData(data);
-        window.location.href = "/playaudio";
+         setQuestionnaireData(data);
+         // maybe try to play the audio for the next one within the questionaire for the next one instead of a redirect
+        // window.location.href = "/playaudio";
+        window.location.href = "/questionnaire/page2";
     };
-    useEffect(() => {
-        console.log("questionnaireData:", questionnaireData);
-    }, [questionnaireData]);
     return (
         <main>
             <form onSubmit={handleSubmit}>
