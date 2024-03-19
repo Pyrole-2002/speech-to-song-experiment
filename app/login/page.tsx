@@ -24,8 +24,8 @@ const LoginPage = () => {
 				</label>
 				<br />
 				<label>
-					Session Number:
-					<input type="text" name="sessionNumber" />
+					Group ID:
+					<input type="text" name="groupID" />
 				</label>
 				<br />
 				<button type="submit">
