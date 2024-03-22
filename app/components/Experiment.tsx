@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import path from 'path';
-import { initJsPsych } from 'jspsych';
+import { JsPsych, initJsPsych } from 'jspsych';
 import 'jspsych/css/jspsych.css';
 import jsPsychPreload from '@jspsych/plugin-preload';
 import fullscreen from '@jspsych/plugin-fullscreen';
@@ -28,6 +28,8 @@ const Experiment: React.FC = () => {
         if (audioFiles.length === 0) {
             getAudioFiles();
         }
+        const audioTimelineVariables = audioFiles.map(audio => ({ audio: audio}));
+
         const jspsych = initJsPsych({
             plugins: [
                 jsPsychPreload,
@@ -124,13 +126,51 @@ const Experiment: React.FC = () => {
                 {
                     type: surveyLikert,
                     questions: [
-                        {prompt: "How much did you enjoy listening to the audio?", labels: ["Not at all", "Very much"]},
+                        {prompt: "How much did you enjoy listening to the audio?", labels: ["1", "2", "3", "4", "5"]},
                         {prompt: "How much did you like the audio?", labels: ["Not at all", "Very much"]},
                     ],
+                },
+                {
+                    type: htmlKeyboardResponse,
+                    stimulus: "Trial over. Now the experiment data collection will start. Press SPACE when ready.",
+                    choices: [" "],
                 }
             ]
         };
         timeline.push(trial_exp);
+
+        var experiment = {
+            timeline: [
+                {
+                    type: audioKeyboardResponse,
+                    stimulus: jspsych.timelineVariable('audio'),
+                    choices: [' '],
+                    prompt: "<p>Tap Space to the Audio being played. Think when to put this and when not depending on grp...</p>",
+                    response_ends_trial: false,
+                    trial_ends_after_audio: true,
+                    response_allowed_while_playing: true,
+                },
+                {
+                    type: surveyHtmlForm,
+                    html:
+                    `
+                        <p>How did you feel after listening to the audio?</p>
+                        <input type="text" name="feel" placeholder="Feel">
+                        <p>Add questions</p>
+                        <br>
+                    `,
+                },
+                {
+                    type: surveyLikert,
+                    questions: [
+                        {prompt: "How much did you enjoy listening to the audio?", labels: ["1", "2", "3", "4", "5"]},
+                        {prompt: "How much did you like the audio?", labels: ["Not at all", "Very much"]},
+                    ],
+                },
+            ],
+            timeline_variables: audioTimelineVariables,
+        };
+        timeline.push(experiment);
 
         var bye = {
             type: htmlKeyboardResponse,
