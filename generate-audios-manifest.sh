@@ -20,4 +20,6 @@ sed -i '$ s/,$//' ./public/audios-manifest.json
 echo '  ]' >> ./public/audios-manifest.json
 echo "}" >> ./public/audios-manifest.json
 
+# Run the loopAudio.js script to generate and store looped audio files
+node loopAudio.js
 echo "Audio manifest JSON file generated successfully!"
