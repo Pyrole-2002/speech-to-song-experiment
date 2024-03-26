@@ -2,16 +2,78 @@
 
 # Define the path to the audios directory
 audios_dir="./public/audios"
+ll="looped"
+looped="${audios_dir}/${ll}"
+
+rm -rf "$looped"
+mkdir -p "$looped" 
+
+# generating silence audio file
+silence_path="./public/silence.wav"
+sox -n -r 22050 "$silence_path" trim 0 0.5
+
+# temp
+temp_ext="temp"
 
 # Generate the audio manifest JSON file
 echo "{" > ./public/audios-manifest.json
 echo '  "audioFiles": [' >> ./public/audios-manifest.json
 
-# List all .wav files in the audios directory and write them to the manifest file
-find "$audios_dir" -type f -name "*.wav" | while read -r file; do
+myArray=()
+filname_without_ext=()
+
+while read -r file; do
     filename=$(basename "$file")
     echo "    \"$filename\"," >> ./public/audios-manifest.json
+    # concatenate audios_dir and filename into a temproary variable
+    without_ext="${filename%%.*}"
+    filname_without_ext+=("$without_ext")
+    # echo $without_ext
+    temp="$audios_dir/$without_ext"
+    # echo $temp
+    tempname="${temp}_${temp_ext}.wav"
+    # echo $tempname
+    temp="$temp.wav"
+    myArray+=("$tempname")
+    # echo $tempname
+    sox "$temp" "$silence_path" "$tempname"
+done < <(find "$audios_dir" -type f -name "*.wav")
+
+rm "$silence_path"
+
+loop_count=10
+
+echo "Elements in the array:"
+echo ${myArray[@]} 
+echo "Elements in the array:"
+echo ${filname_without_ext[@]}
+
+k=0
+
+# Outer loop: Iterate over each element in the array
+for element in "${myArray[@]}"; do
+    loop="loop.wav"
+    temp_loop="${element}_${loop}"\
+    tt="${temp_loop}_0.wav"
+    # echo $tt
+    sox "$element" "$element" "$tt"
+    for (( j=0; j<loop_count; j++ )); do
+        # echo "${temp_loop}_${j}.wav"
+        tt1="${temp_loop}_${j}.wav"
+        tt2="${temp_loop}_$((j+1)).wav"
+        # echo $tt1
+        # echo $tt2
+        sox "$tt1" "$element" "$tt2"
+        rm "$tt1"
+    done
+    rm "$element"
+    tt="${temp_loop}_$loop_count.wav"
+    t=$k
+    ttt="${audios_dir}/${ll}/${filname_without_ext[t]}_looped.wav"
+    mv "$tt" "$ttt"
+    ((k++))
 done
+
 
 # Remove the trailing comma from the last file entry
 sed -i '$ s/,$//' ./public/audios-manifest.json
@@ -20,6 +82,7 @@ sed -i '$ s/,$//' ./public/audios-manifest.json
 echo '  ]' >> ./public/audios-manifest.json
 echo "}" >> ./public/audios-manifest.json
 
-# Run the loopAudio.js script to generate and store looped audio files
-node loopAudio.js
+# # Run the loopAudio.js script to generate and store looped audio files
+# node loopAudio.js
 echo "Audio manifest JSON file generated successfully!"
+

@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import path from 'path';
-import { JsPsych, initJsPsych } from 'jspsych';
+import { initJsPsych } from 'jspsych';
 import 'jspsych/css/jspsych.css';
 import jsPsychPreload from '@jspsych/plugin-preload';
 import fullscreen from '@jspsych/plugin-fullscreen';
@@ -28,12 +28,15 @@ const Experiment: React.FC = () => {
         if (audioFiles.length === 0) {
             getAudioFiles();
         }
-        const audioTimelineVariables = audioFiles.map(audio => ({ audio: audio}));
+        const audioTimelineVariables = audioFiles.map(audio => ({ audio: audio }));
 
         const jspsych = initJsPsych({
             plugins: [
                 jsPsychPreload,
             ],
+            on_finish: () => {
+                jspsych.data.displayData();
+            }
         });
 
         var timeline = [];
