@@ -20,7 +20,7 @@ const Experiment: React.FC = () => {
             const respJson = await response.json();
             const filePaths = respJson.audioFiles;
             const audioFiles = filePaths.map((filePath: string) => {
-                return path.join("/audios/", filePath);
+                return path.join("/audios/looped", filePath);
             });
             console.log(audioFiles);
             setAudioFiles(audioFiles);
