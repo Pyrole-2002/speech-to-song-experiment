@@ -39,7 +39,7 @@ done < <(find "$audios_dir" -type f -name "*.wav")
 
 rm "$silence_path"
 
-loop_count=10
+loop_count=3
 k=0
 # Outer loop: Iterate over each element in the array
 for element in "${myArray[@]}"; do

@@ -35,7 +35,8 @@ const Experiment: React.FC = () => {
                 jsPsychPreload,
             ],
             on_finish: () => {
-                jspsych.data.displayData();
+                // jspsych.data.displayData();
+                jspsych.data.get().localSave('csv', 'data.csv');
             }
         });
 
@@ -59,8 +60,8 @@ const Experiment: React.FC = () => {
             `
                 <p>Participant ID</p>
                 <input type="text" name="participant_id" placeholder="Participant ID">
-                <p>Tapping (yes/no)</p>
-                <input type="text" name="tapping" placeholder="Tapping">
+                <p>Tapping (0 = No/ 1 = Yes)</p>
+                <input type="number" min="0" max="1" name="tapping" placeholder="Tapping">
                 <br>
                 <br>
                 <br>
